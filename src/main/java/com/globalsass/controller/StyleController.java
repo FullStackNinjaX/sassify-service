@@ -2,10 +2,12 @@ package com.globalsass.controller;
 
 import com.globalsass.service.StyleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,7 +49,9 @@ public class StyleController {
                 .collect(Collectors.joining("\n"));
 
         String cssOutput = ":root {\n" + cssVariables + "\n}";
-        return ResponseEntity.ok(cssOutput);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic())
+                .body(cssOutput);
     }
 
     private String convertToKebabCase(String input) {
